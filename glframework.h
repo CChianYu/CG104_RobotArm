@@ -98,8 +98,11 @@ protected:
     void paper_pose();
     void scissor_pose();
     void one();
+    void drawFinger1();
     void drawFinger2();
-
+    void drawFinger3();
+    void drawFinger4();
+    void drawFinger5();
 
 private:
 

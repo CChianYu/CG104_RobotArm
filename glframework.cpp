@@ -57,7 +57,7 @@ static int action=0;
 float anklea=0,		anklex=0,		ankley=0,		anklez=1;		//手肘
 float plama,		plamx=0,		plamy=0,	plamz=0;			//手掌 (靜止)
 float anklef1a[2],	anklef1x[2],	anklef1y[2],	anklef1z[2];	//拇指
-float anklef2a[3],	anklef2x[3],	anklef2y[3],	anklef2z[3];	//食指
+int anklef2a[3],	anklef2x[3],	anklef2y[3],	anklef2z[3];	//食指
 float anklef3a[3],	anklef3x[3],	anklef3y[3],	anklef3z[3];	//中指
 float anklef4a[3],	anklef4x[3],	anklef4y[3],	anklef4z[3];	//無名指
 float anklef5a[3],	anklef5x[3],	anklef5y[3],	anklef5z[3];	//小指
@@ -65,7 +65,7 @@ float anklef5a[3],	anklef5x[3],	anklef5y[3],	anklef5z[3];	//小指
 
 int state=1;
 
-enum {STANDBY=0, ROCK, ONE};
+enum {STANDBY, ROCK, ONE, SCISSOR, PAPER};
 
 GLFramework::GLFramework(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -120,30 +120,42 @@ void GLFramework::timerEvent(QTimerEvent *)
         //cout << "rock" << endl;
         rock_pose();
         break;
+    case SCISSOR:
+        scissor_pose();
+        break;
+    case PAPER:
+        paper_pose();
+        break;
     }
 
      this->update();
 }
 
-void GLFramework::setPose(int pose)
+void GLFramework::setAction(int pose)
 {
     standby();
 
     switch(pose)
     {
-        case 0:
+        case STANDBY:
             action = STANDBY;
         break;
-    case 2:
+    case ONE:
         action = ONE;
         break;
-    case 1:
+    case ROCK:
         action = ROCK;
+        break;
+    case SCISSOR:
+        action = SCISSOR;
+        break;
+    case PAPER:
+        action = PAPER;
         break;
     default:
         cout << "Undefined Pose:" << pose << endl;
     }
-    cout << "Anklea " << anklea << endl;
+    //cout << "Anklea " << anklea << endl;
 }
 
 
@@ -185,6 +197,22 @@ void GLFramework::standby(){
     plama=0,plamx=0,plamy=0,plamz=0;  //手掌
 
     //-----------------------------------------
+    anklef1a[0]=15;		//姆指接掌
+    anklef1x[0]=0;
+    anklef1y[0]=0;
+    anklef1z[0]=1;
+
+    anklef1a[1]=-10;	//姆指1
+    anklef1x[1]=0;
+    anklef1y[1]=0;
+    anklef1z[1]=1;
+
+    anklef1a[2]=-10;	//姆指2
+    anklef1x[2]=0;
+    anklef1y[2]=0;
+    anklef1z[2]=1;
+
+    //-----------------------------------------
     anklef2a[0]=15;		//食指接掌
     anklef2x[0]=0;
     anklef2y[0]=0;
@@ -200,8 +228,113 @@ void GLFramework::standby(){
     anklef2y[2]=0;
     anklef2z[2]=1;
 
+    //-----------------------------------------
+    anklef3a[0]=15;		//中指接掌
+    anklef3x[0]=0;
+    anklef3y[0]=0;
+    anklef3z[0]=1;
 
-    cout << "Calling StandBy" << endl;
+    anklef3a[1]=-10;	//中指1
+    anklef3x[1]=0;
+    anklef3y[1]=0;
+    anklef3z[1]=1;
+
+    anklef3a[2]=-10;	//中指2
+    anklef3x[2]=0;
+    anklef3y[2]=0;
+    anklef3z[2]=1;
+
+    //-----------------------------------------
+    anklef4a[0]=15;		//無名指接掌
+    anklef4x[0]=0;
+    anklef4y[0]=0;
+    anklef4z[0]=1;
+
+    anklef4a[1]=-10;	//無名指1
+    anklef4x[1]=0;
+    anklef4y[1]=0;
+    anklef4z[1]=1;
+
+    anklef4a[2]=-10;	//無名指2
+    anklef4x[2]=0;
+    anklef4y[2]=0;
+    anklef4z[2]=1;
+
+    //-----------------------------------------
+    anklef5a[0]=15;		//小指接掌
+    anklef5x[0]=0;
+    anklef5y[0]=0;
+    anklef5z[0]=1;
+
+    anklef5a[1]=-10;	//小指1
+    anklef5x[1]=0;
+    anklef5y[1]=0;
+    anklef5z[1]=1;
+
+    anklef5a[2]=-10;	//小指2
+    anklef5x[2]=0;
+    anklef5y[2]=0;
+    anklef5z[2]=1;
+
+    //cout << "Calling StandBy" << endl;
+}
+
+void GLFramework::drawFinger1()
+{
+    //------------------------------------------------------------姆指
+    glTranslatef(-7, -5, 0.0);
+    glRotatef(anklef1a[0],anklef1x[0],anklef1y[0], anklef1z[0]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//姆指節3
+
+    glPushMatrix();
+    glScalef(1.2, 0.6, 1);
+    glColor3ub(255,177,98);
+    glutSolidSphere(2.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//姆指中關節
+    glRotatef(anklef1a[1],anklef1x[1],anklef1y[1], anklef1z[1]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3.0,0,0.0);//姆指節2
+
+    glPushMatrix();
+    glScalef(1,0.6,1);
+    glColor3ub(89,197,255);
+    glutSolidSphere(2.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    /*glTranslatef(-3, 0, 0.0);//姆指上關節
+    glRotatef(anklef1a[2],anklef1x[2],anklef1y[2], anklef1z[2]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-2.5,0.0,0.0); //姆指節3
+
+    glPushMatrix();
+    glRotatef(20.0,0,1,1.0);
+    glScalef(1.0,0.6,1.0);
+    glColor3ub(0,177,98);
+    glutSolidSphere(1.7, 30.0, 30.0);
+    glPopMatrix();*/
 }
 
 void GLFramework::drawFinger2()
@@ -262,6 +395,180 @@ void GLFramework::drawFinger2()
     glPopMatrix();
 }
 
+void GLFramework::drawFinger3()
+{
+    //------------------------------------------------------------中指
+    glTranslatef(-7, -5, 0.0);
+    glRotatef(anklef3a[0],anklef3x[0],anklef3y[0], anklef3z[0]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//中指節3
+
+    glPushMatrix();
+    glScalef(1.2, 0.6, 1);
+    glColor3ub(255,177,98);
+    glutSolidSphere(2.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//中指中關節
+    glRotatef(anklef3a[1],anklef3x[1],anklef3y[1], anklef3z[1]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3.0,0,0.0);//中指節2
+
+    glPushMatrix();
+    glScalef(1,0.6,1);
+    glColor3ub(89,197,255);
+    glutSolidSphere(2.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3, 0, 0.0);//中指上關節
+    glRotatef(anklef3a[2],anklef3x[2],anklef3y[2], anklef3z[2]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-2.5,0.0,0.0); //食指節3
+
+    glPushMatrix();
+    glRotatef(20.0,0,1,1.0);
+    glScalef(1.0,0.6,1.0);
+    glColor3ub(0,177,98);
+    glutSolidSphere(1.7, 30.0, 30.0);
+    glPopMatrix();
+}
+
+void GLFramework::drawFinger4()
+{
+    //------------------------------------------------------------無名指
+    glTranslatef(-7, -5, 0.0);
+    glRotatef(anklef4a[0],anklef4x[0],anklef4y[0], anklef4z[0]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//無名指節3
+
+    glPushMatrix();
+    glScalef(1.2, 0.6, 1);
+    glColor3ub(255,177,98);
+    glutSolidSphere(2.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//無名指中關節
+    glRotatef(anklef4a[1],anklef4x[1],anklef4y[1], anklef4z[1]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3.0,0,0.0);//無名指節2
+
+    glPushMatrix();
+    glScalef(1,0.6,1);
+    glColor3ub(89,197,255);
+    glutSolidSphere(2.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3, 0, 0.0);//無名指上關節
+    glRotatef(anklef4a[2],anklef4x[2],anklef4y[2], anklef4z[2]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-2.5,0.0,0.0); //無名指節3
+
+    glPushMatrix();
+    glRotatef(20.0,0,1,1.0);
+    glScalef(1.0,0.6,1.0);
+    glColor3ub(0,177,98);
+    glutSolidSphere(1.7, 30.0, 30.0);
+    glPopMatrix();
+}
+
+void GLFramework::drawFinger5()
+{
+    //------------------------------------------------------------小指
+    glTranslatef(-7, -5, 0.0);
+    glRotatef(anklef5a[0],anklef5x[0],anklef5y[0], anklef5z[0]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//小指節3
+
+    glPushMatrix();
+    glScalef(1.2, 0.6, 1);
+    glColor3ub(255,177,98);
+    glutSolidSphere(2.5, 30.0, 30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-4,0,0);//小指中關節
+    glRotatef(anklef5a[1],anklef5x[1],anklef5y[1], anklef5z[1]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3.0,0,0.0);//小指節2
+
+    glPushMatrix();
+    glScalef(1,0.6,1);
+    glColor3ub(89,197,255);
+    glutSolidSphere(2.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-3, 0, 0.0);//小指上關節
+    glRotatef(anklef5a[2],anklef5x[2],anklef5y[2], anklef5z[2]);
+
+    glPushMatrix();
+    glColor3ub(0,0,0);
+    glutSolidSphere(1.0,30.0,30.0);
+    glPopMatrix();
+
+    //-----------------------------
+    glTranslatef(-2.5,0.0,0.0); //小指節3
+
+    glPushMatrix();
+    glRotatef(20.0,0,1,1.0);
+    glScalef(1.0,0.6,1.0);
+    glColor3ub(0,177,98);
+    glutSolidSphere(1.7, 30.0, 30.0);
+    glPopMatrix();
+}
+
 void GLFramework::draw_hand()
 {
     glPushMatrix();						//上臂
@@ -306,6 +613,7 @@ void GLFramework::draw_hand()
 
     glTranslatef(-10.0, 0.0, -3);//原點位置：食指與掌接點
 
+    //-------------------------------make Finger2
     glPushMatrix();//食指接掌關節
 
     drawFinger2();
@@ -317,7 +625,7 @@ void GLFramework::draw_hand()
 
     glTranslatef(2.0, 4.0, -3);
     glRotatef(-20, 0, 0, 1);
-    drawFinger2();
+    drawFinger3();
 
     glPopMatrix();
 
@@ -326,7 +634,7 @@ void GLFramework::draw_hand()
 
     glTranslatef(4.0, 6.0, -3);
     glRotatef(-40, 0, 0, 1);
-    drawFinger2();
+    drawFinger4();
 
     glPopMatrix();
 
@@ -335,7 +643,7 @@ void GLFramework::draw_hand()
 
     glTranslatef(10.0, 8.0, -3);
     glRotatef(-50, 0, 0, 1);
-    drawFinger2();
+    drawFinger5();
 
     glPopMatrix();
     //-------------------------------make Finger1
@@ -343,7 +651,7 @@ void GLFramework::draw_hand()
 
     glTranslatef(4.0, 0.0, -3);
     glRotatef(30, 0, 0, 1);
-    drawFinger2();
+    drawFinger1();
 
     glPopMatrix();
 }
@@ -437,31 +745,60 @@ void GLFramework::init()
     glClearColor(1.0f,1.0f,1.0f,0.0f);
 }
 
+void GLFramework::scissor_pose()
+{
+
+}
+
+void GLFramework::paper_pose()
+{
+    if(anklea>=0)
+        anklea--;
+    state=0;
+    //-----------------------------------------
+
+    /*for(int i=0; i<3; i++)
+    {
+        if(anklef1a[i]<=-10)
+            anklef1a[i]++;
+        if(anklef2a[i]<=-10)
+            anklef2a[i]++;
+        if(anklef3a[i]<=-10)
+            anklef3a[i]++;
+        if(anklef4a[i]<=-10)
+            anklef4a[i]++;
+        if(anklef5a[i]<=-10)
+            anklef5a[i]++;
+        anklef1x[i]=anklef2x[i]=anklef3x[i]=anklef4x[i]=anklef5x[i]=0;
+        anklef1y[i]=anklef2y[i]=anklef3y[i]=anklef4y[i]=anklef5y[i]=1;
+        anklef1z[i]=anklef2z[i]=anklef3z[i]=anklef4z[i]=anklef5z[i]=0;
+    }*/
+}
+
 void GLFramework::rock_pose()
 {
     if(anklea>=0)
         anklea--;
     state=0;
     //-----------------------------------------
-    if(anklef2a[0]>=-90)
-        anklef2a[0]--;    //食指接掌
-    anklef2x[0]=0;
-    anklef2y[0]=1;
-    anklef2z[0]=0;
-
-    if(anklef2a[1]>=-90)
-        anklef2a[1]--;    //食指1
-    anklef2x[1]=0;
-    anklef2y[1]=1;
-    anklef2z[1]=0;
-
-    if(anklef2a[2]>=-90)
-        anklef2a[2]--;    //食指2
-    anklef2x[2]=0;
-    anklef2y[2]=1;
-    anklef2z[2]=0;
-
-    cout << "Calling Rock" << endl;
+    for(int i=0; i<3; i++)
+    {
+        if(i<2 && anklef1a[i]>=-90)
+            anklef1a[i]--;
+        if(anklef2a[i]>=-90.0)//{cout << anklef2a[i] << "ankle & i" << i << endl;
+            anklef2a[i]--;//cout << anklef2a[i] << "ankle & i **" << i << endl;}
+        if(anklef3a[i]>=-90)
+            anklef3a[i]--;
+        if(anklef4a[i]>=-90)
+            anklef4a[i]--;
+        if(anklef5a[i]>=-90)
+            anklef5a[i]--;
+        anklef2x[i]=0;anklef3x[i]=0;anklef4x[i]=0;anklef5x[i]=0;
+        anklef2y[i]=1;anklef3y[i]=1;anklef4y[i]=1;anklef5y[i]=1;
+        anklef2z[i]=0;anklef3z[i]=0;anklef4z[i]=0;anklef5z[i]=0;
+        if(i<2){anklef1x[i]=0;anklef1y[i]=1; anklef1z[i]=0;}
+    }
+    //cout << "Calling Rock" << anklef2a[0]<< endl;
 }
 
 void GLFramework::one()                 //1
@@ -483,7 +820,7 @@ void GLFramework::one()                 //1
     anklef2y[2]=0;
     anklef2z[2]=0;
 
-    cout << "Calling One" << endl;
+    //cout << "Calling One" << endl;
 }
 void GLFramework::paintGL()
 {
