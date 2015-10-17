@@ -65,7 +65,7 @@ float anklef5a[3],	anklef5x[3],	anklef5y[3],	anklef5z[3];	//小指
 
 int state=1;
 
-enum {STANDBY, ROCK, ONE, SCISSOR, PAPER};
+enum {STANDBY, STONE, ONE, SCISSOR, PAPER, IDLE};
 
 GLFramework::GLFramework(QWidget *parent)
     : QOpenGLWidget(parent)
@@ -116,9 +116,9 @@ void GLFramework::timerEvent(QTimerEvent *)
         //cout << "one" << endl;
         one();
         break;
-    case ROCK:
-        //cout << "rock" << endl;
-        rock_pose();
+    case STONE:
+        //cout << "STONE" << endl;
+        stone_pose();
         break;
     case SCISSOR:
         scissor_pose();
@@ -133,24 +133,31 @@ void GLFramework::timerEvent(QTimerEvent *)
 
 void GLFramework::setAction(int pose)
 {
-    standby();
+    //one();
 
     switch(pose)
     {
         case STANDBY:
+            if(action == IDLE)anklea = 120;
             action = STANDBY;
         break;
     case ONE:
+        if(action == IDLE)anklea = 120;
         action = ONE;
         break;
-    case ROCK:
-        action = ROCK;
+    case STONE:
+        if(action == IDLE)anklea = 120;
+        action = STONE;
         break;
     case SCISSOR:
+        if(action == IDLE)anklea = 120;
         action = SCISSOR;
         break;
     case PAPER:
+        if(action == IDLE)anklea = 120;
         action = PAPER;
+        break;
+    case IDLE:
         break;
     default:
         cout << "Undefined Pose:" << pose << endl;
@@ -747,19 +754,47 @@ void GLFramework::init()
 
 void GLFramework::scissor_pose()
 {
-
+    if(anklea<=0 && (anklef3a[2]<=-90 || anklef3a[2]>=-10))
+        action = IDLE;
+    else if(anklea>=0 )
+    {
+        anklea--;
+    }
+    state=0;
+    //-----------------------------------------
+    for(int i=0; i<3; i++)
+    {
+        if(i<2 && anklef1a[i]>=-90)
+            anklef1a[i]--;
+        if(anklef2a[i]<=-10)
+            anklef2a[i]++;
+        if(anklef3a[i]<=-10)
+            anklef3a[i]++;
+        if(anklef4a[i]>=-90)
+            anklef4a[i]--;
+        if(anklef5a[i]>=-90)
+            anklef5a[i]--;
+        anklef2x[i]=0;anklef3x[i]=0;anklef4x[i]=0;anklef5x[i]=0;
+        anklef2y[i]=1;anklef3y[i]=1;anklef4y[i]=1;anklef5y[i]=1;
+        anklef2z[i]=0;anklef3z[i]=0;anklef4z[i]=0;anklef5z[i]=0;
+        if(i<2){anklef1x[i]=0;anklef1y[i]=1; anklef1z[i]=0;}
+    }
 }
 
 void GLFramework::paper_pose()
 {
-    if(anklea>=0)
+    if(anklea<=0 && (anklef3a[2]<=-90 || anklef3a[2]>=-10))
+        action = IDLE;
+    else if(anklea>=0 )
+    {
         anklea--;
+    }
     state=0;
     //-----------------------------------------
 
-    /*for(int i=0; i<3; i++)
+    for(int i=0; i<3; i++)
     {
-        if(anklef1a[i]<=-10)
+        if(i<2 && anklef1a[i]<=-10)
             anklef1a[i]++;
         if(anklef2a[i]<=-10)
             anklef2a[i]++;
@@ -769,16 +804,21 @@ void GLFramework::paper_pose()
             anklef4a[i]++;
         if(anklef5a[i]<=-10)
             anklef5a[i]++;
-        anklef1x[i]=anklef2x[i]=anklef3x[i]=anklef4x[i]=anklef5x[i]=0;
-        anklef1y[i]=anklef2y[i]=anklef3y[i]=anklef4y[i]=anklef5y[i]=1;
-        anklef1z[i]=anklef2z[i]=anklef3z[i]=anklef4z[i]=anklef5z[i]=0;
-    }*/
+        anklef2x[i]=0;anklef3x[i]=0;anklef4x[i]=0;anklef5x[i]=0;
+        anklef2y[i]=1;anklef3y[i]=1;anklef4y[i]=1;anklef5y[i]=1;
+        anklef2z[i]=0;anklef3z[i]=0;anklef4z[i]=0;anklef5z[i]=0;
+        if(i<2){anklef1x[i]=0;anklef1y[i]=1; anklef1z[i]=0;}
+    }
 }
 
-void GLFramework::rock_pose()
+void GLFramework::stone_pose()
 {
-    if(anklea>=0)
+    if(anklea<=0 && anklef3a[2]<=-90 )
+        action = IDLE;
+    else if(anklea>=0 )
+    {
         anklea--;
+    }
     state=0;
     //-----------------------------------------
     for(int i=0; i<3; i++)
@@ -798,27 +838,37 @@ void GLFramework::rock_pose()
         anklef2z[i]=0;anklef3z[i]=0;anklef4z[i]=0;anklef5z[i]=0;
         if(i<2){anklef1x[i]=0;anklef1y[i]=1; anklef1z[i]=0;}
     }
-    //cout << "Calling Rock" << anklef2a[0]<< endl;
+    //cout << "Calling STONE" << anklef2a[0]<< endl;
 }
 
-void GLFramework::one()                 //1
+void GLFramework::one()                 // folding Finger1, 3, 4, 5
 {
     if(anklea>=60)
         anklea--;
+    else if(anklea<=0)
+    {
+        action = IDLE;
+    }
     state=0;
 
     //-----------------------------------------
-    anklef2x[0]=0;    //食指接掌
-    anklef2y[0]=0;
-    anklef2z[0]=0;
-
-    anklef2x[1]=0;    //食指1
-    anklef2y[1]=0;
-    anklef2z[1]=0;
-
-    anklef2x[2]=0;    //食指2
-    anklef2y[2]=0;
-    anklef2z[2]=0;
+    for(int i=0; i<3; i++)
+    {
+        if(i<2 && anklef1a[i]>=-90)
+            anklef1a[i]--;
+        if(anklef2a[i]<=-10)
+            anklef2a[i]++;
+        if(anklef3a[i]>=-90)
+            anklef3a[i]--;
+        if(anklef4a[i]>=-90)
+            anklef4a[i]--;
+        if(anklef5a[i]>=-90)
+            anklef5a[i]--;
+        anklef2x[i]=0;anklef3x[i]=0;anklef4x[i]=0;anklef5x[i]=0;
+        anklef2y[i]=1;anklef3y[i]=1;anklef4y[i]=1;anklef5y[i]=1;
+        anklef2z[i]=0;anklef3z[i]=0;anklef4z[i]=0;anklef5z[i]=0;
+        if(i<2){anklef1x[i]=0;anklef1y[i]=1; anklef1z[i]=0;}
+    }
 
     //cout << "Calling One" << endl;
 }

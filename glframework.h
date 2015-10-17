@@ -94,7 +94,7 @@ protected:
     void draw_hand();
     void draw();
     void display();
-    void rock_pose();
+    void stone_pose();
     void paper_pose();
     void scissor_pose();
     void one();
